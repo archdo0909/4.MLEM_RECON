@@ -2,8 +2,13 @@ close all;
 clear all;
 clc
 
-x1 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.LM_MLEM\data\20170626\Sullivan2.csv');
-x2 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.LM_MLEM\data\20170626\(-9,-3,0)_10^6.csv');
+x1 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.MLEM_RECON\LM_MLEM_3D\Paper_data\(-1,1,5)_20_6.csv');
+x2 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.MLEM_RECON\LM_MLEM_3D\result\20170728\2.(0,0,2.5).csv');
+x3 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.MLEM_RECON\LM_MLEM_3D\result\20170728\3.(2.5,0,2.5).csv');
+x4 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.MLEM_RECON\LM_MLEM_3D\result\20170728\4.(2.5,0,0).csv');
+x5 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.MLEM_RECON\LM_MLEM_3D\result\20170728\5.(2.5,0,2.5).csv');
+x6 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.MLEM_RECON\LM_MLEM_3D\result\20170728\6.(0,0,2.5).csv');
+x7 = csvread('E:\DoYeon\Document\5. Program\Reconstruction\4.MLEM_RECON\LM_MLEM_3D\result\20170728\7.(2.5,0,2.5).csv');
 %x1 = csvread('sample2.csv');
 % x2 = csvread('(0,0,3)_test.csv');
 %Radiation Energy
@@ -29,10 +34,24 @@ compton.absorber=[];
 compton.angle=[];
 compton.cnt = 1;
 result.Index = [];
-robot_po1=[0 0 -5];
-scope = 10^-1;
+robot_po1=[5,];
+% robot_po1=[2.5 0 2.5];
+robot_po2=[0 0 -2.5];
+robot_po3=[2.5 0 -2.5];
+robot_po4=[2.5 0 0];
+robot_po5=[2.5 0 2.5];
+robot_po6=[0 0 2.5];
+robot_po7=[-2.5 0 2.5];
+scope = 10^-3;
 camera_direction1 = [0 0 1];
-Index_compton = zeros(2,Det.nGrid*2);
+%camera_direction1 = [-1 0 0];
+camera_direction2 = [0 0 1];
+camera_direction3 = [0 0 1];
+camera_direction4 = [-1 0 0];
+camera_direction5 = [-1 0 0];
+camera_direction6 = [0 0 -1];
+camera_direction7 = [0 0 -1];
+Index_compton = zeros(2,Det.nGrid*7);
 for i=1:1:(size(x1,1)-1)  
     if(x1(i,1)<64 && x1(i+1,1) > 63 && x1(i,5) < 0.66)   %select first layer coincidence
         if((x1(i,5)+x1(i+1,5)) <= 0.66 && (x1(i,5)+x1(i+1,5)) >= 0.6555)  %compared deposited energy
@@ -47,48 +66,191 @@ for i=1:1:(size(x1,1)-1)
             
             compton.absorber(compton.cnt, 1) = x1(i+1,1);         
             compton.absorber(compton.cnt, 2) = x1(i+1,2)*scope+robot_po1(1);
-            compton.absorber(compton.cnt, 3) = x1(i+1,3)*scope+robot_po1(2);
+            compton.absorber(compton.cnt, 3) = x1(i+1,3)*scope+robot_po1(2); 
             compton.absorber(compton.cnt, 4) = x1(i+1,4)*scope+robot_po1(3);
             compton.absorber(compton.cnt, 5) = x1(i+1,5);
             compton.cnt = compton.cnt + 1;
         end
     end
 end
-j = compton.cnt-1;
+x1compton_cnt = compton.cnt-1;
 for i=1:compton.cnt-1
     index = Det.Num_scatter * compton.scatter(i,1) + compton.absorber(i,1) - (Det.Num_absorber - 1);
     Index_compton(1,index) = Index_compton(1,index) + 1;
     Index_compton(2,index) = i;
 end
-robot_po2 = [10 0 5];
-camera_direction2 = [-1 0 0];
+disp(compton.cnt);
 for i=1:1:(size(x2,1)-1)  
     if(x2(i,1)<64 && x2(i+1,1) > 63 && x2(i,5) < 0.66)   %select first layer coincidence
         if((x2(i,5)+x2(i+1,5)) <= 0.66 && (x2(i,5)+x2(i+1,5)) >= 0.6555)  %compared deposited energy
             compton.scatter(compton.cnt, 1) = x2(i,1);         
-            compton.scatter(compton.cnt, 2) = -x2(i,4)*scope+robot_po2(1);
+            compton.scatter(compton.cnt, 2) = x2(i,2)*scope+robot_po2(1);
             compton.scatter(compton.cnt, 3) = x2(i,3)*scope+robot_po2(2);
-            compton.scatter(compton.cnt, 4) = x2(i,2)*scope+robot_po2(3);
+            compton.scatter(compton.cnt, 4) = x2(i,4)*scope+robot_po2(3);
             compton.scatter(compton.cnt, 5) = x2(i,5);
             compton.scatter(compton.cnt, 6) = camera_direction2(1);
             compton.scatter(compton.cnt, 7) = camera_direction2(2);
             compton.scatter(compton.cnt, 8) = camera_direction2(3);
             
             compton.absorber(compton.cnt, 1) = x2(i+1,1);         
-            compton.absorber(compton.cnt, 2) = -x2(i+1,4)*scope+robot_po2(1);
+            compton.absorber(compton.cnt, 2) = x2(i+1,2)*scope+robot_po2(1);
             compton.absorber(compton.cnt, 3) = x2(i+1,3)*scope+robot_po2(2);
-            compton.absorber(compton.cnt, 4) = x2(i+1,2)*scope+robot_po2(3);
+            compton.absorber(compton.cnt, 4) = x2(i+1,4)*scope+robot_po2(3);
             compton.absorber(compton.cnt, 5) = x2(i+1,5);
             compton.cnt = compton.cnt + 1;
         end
     end
 end
-for i=j+1:compton.cnt-1
+x2compton_cnt = compton.cnt-1;
+for i=x1compton_cnt+1:compton.cnt-1
     index = Det.Num_scatter * compton.scatter(i,1) + compton.absorber(i,1) - (Det.Num_absorber - 1);
     index2 = index + 64*64;
     Index_compton(1,index2) = Index_compton(1,index2) + 1;
     Index_compton(2,index2) = i;
 end
+for i=1:1:(size(x3,1)-1)  
+    if(x3(i,1)<64 && x3(i+1,1) > 63 && x3(i,5) < 0.66)   %select first layer coincidence
+        if((x3(i,5)+x3(i+1,5)) <= 0.66 && (x3(i,5)+x3(i+1,5)) >= 0.6555)  %compared deposited energy
+            compton.scatter(compton.cnt, 1) = x3(i,1);         
+            compton.scatter(compton.cnt, 2) = x3(i,2)*scope+robot_po3(1);
+            compton.scatter(compton.cnt, 3) = x3(i,3)*scope+robot_po3(2);
+            compton.scatter(compton.cnt, 4) = x3(i,4)*scope+robot_po3(3);
+            compton.scatter(compton.cnt, 5) = x3(i,5);
+            compton.scatter(compton.cnt, 6) = camera_direction3(1);
+            compton.scatter(compton.cnt, 7) = camera_direction3(2);
+            compton.scatter(compton.cnt, 8) = camera_direction3(3);
+            
+            compton.absorber(compton.cnt, 1) = x3(i+1,1);         
+            compton.absorber(compton.cnt, 2) = x3(i+1,2)*scope+robot_po3(1);
+            compton.absorber(compton.cnt, 3) = x3(i+1,3)*scope+robot_po3(2);
+            compton.absorber(compton.cnt, 4) = x3(i+1,4)*scope+robot_po3(3);
+            compton.absorber(compton.cnt, 5) = x3(i+1,5);
+            compton.cnt = compton.cnt + 1;
+        end
+    end
+end
+x3compton_cnt = compton.cnt-1;
+for i=x2compton_cnt+1:compton.cnt-1
+    index = Det.Num_scatter * compton.scatter(i,1) + compton.absorber(i,1) - (Det.Num_absorber - 1);
+    index2 = index + 64*64*2;
+    Index_compton(1,index2) = Index_compton(1,index2) + 1;
+    Index_compton(2,index2) = i;
+end
+for i=1:1:(size(x4,1)-1)  
+    if(x4(i,1)<64 && x4(i+1,1) > 63 && x4(i,5) < 0.66)   %select first layer coincidence
+        if((x4(i,5)+x4(i+1,5)) <= 0.66 && (x4(i,5)+x4(i+1,5)) >= 0.6555)  %compared deposited energy
+            compton.scatter(compton.cnt, 1) = x4(i,1);         
+            compton.scatter(compton.cnt, 2) = -x4(i,4)*scope+robot_po4(1);
+            compton.scatter(compton.cnt, 3) = x4(i,3)*scope+robot_po4(2);
+            compton.scatter(compton.cnt, 4) = x4(i,2)*scope+robot_po4(3);
+            compton.scatter(compton.cnt, 5) = x4(i,5);
+            compton.scatter(compton.cnt, 6) = camera_direction4(1);
+            compton.scatter(compton.cnt, 7) = camera_direction4(2);
+            compton.scatter(compton.cnt, 8) = camera_direction4(3);
+            
+            compton.absorber(compton.cnt, 1) = x4(i+1,1);         
+            compton.absorber(compton.cnt, 2) = -x4(i+1,4)*scope+robot_po4(1);
+            compton.absorber(compton.cnt, 3) = x4(i+1,3)*scope+robot_po4(2);
+            compton.absorber(compton.cnt, 4) = x4(i+1,2)*scope+robot_po4(3);
+            compton.absorber(compton.cnt, 5) = x4(i+1,5);
+            compton.cnt = compton.cnt + 1;
+        end
+    end
+end
+x4compton_cnt = compton.cnt-1;
+for i=x3compton_cnt+1:compton.cnt-1
+    index = Det.Num_scatter * compton.scatter(i,1) + compton.absorber(i,1) - (Det.Num_absorber - 1);
+    index2 = index + 64*64*3;
+    Index_compton(1,index2) = Index_compton(1,index2) + 1;
+    Index_compton(2,index2) = i;
+end
+for i=1:1:(size(x5,1)-1)  
+    if(x5(i,1)<64 && x5(i+1,1) > 63 && x5(i,5) < 0.66)   %select first layer coincidence
+        if((x5(i,5)+x5(i+1,5)) <= 0.66 && (x5(i,5)+x5(i+1,5)) >= 0.6555)  %compared deposited energy
+            compton.scatter(compton.cnt, 1) = x5(i,1);         
+            compton.scatter(compton.cnt, 2) = -x5(i,4)*scope+robot_po5(1);
+            compton.scatter(compton.cnt, 3) = x5(i,3)*scope+robot_po5(2);
+            compton.scatter(compton.cnt, 4) = x5(i,2)*scope+robot_po5(3);
+            compton.scatter(compton.cnt, 5) = x5(i,5);
+            compton.scatter(compton.cnt, 6) = camera_direction5(1);
+            compton.scatter(compton.cnt, 7) = camera_direction5(2);
+            compton.scatter(compton.cnt, 8) = camera_direction5(3);
+            
+            compton.absorber(compton.cnt, 1) = x5(i+1,1);         
+            compton.absorber(compton.cnt, 2) = -x5(i+1,4)*scope+robot_po5(1);
+            compton.absorber(compton.cnt, 3) = x5(i+1,3)*scope+robot_po5(2);
+            compton.absorber(compton.cnt, 4) = x5(i+1,2)*scope+robot_po5(3);
+            compton.absorber(compton.cnt, 5) = x5(i+1,5);
+            compton.cnt = compton.cnt + 1;
+        end
+    end
+end
+x5compton_cnt = compton.cnt -1;
+for i=x4compton_cnt+1:compton.cnt-1
+    index = Det.Num_scatter * compton.scatter(i,1) + compton.absorber(i,1) - (Det.Num_absorber - 1);
+    index2 = index + 64*64*4;
+    Index_compton(1,index2) = Index_compton(1,index2) + 1;
+    Index_compton(2,index2) = i;
+end
+for i=1:1:(size(x6,1)-1)  
+    if(x6(i,1)<64 && x6(i+1,1) > 63 && x6(i,5) < 0.66)   %select first layer coincidence
+        if((x6(i,5)+x6(i+1,5)) <= 0.66 && (x6(i,5)+x6(i+1,5)) >= 0.6555)  %compared deposited energy
+            compton.scatter(compton.cnt, 1) = x6(i,1);         
+            compton.scatter(compton.cnt, 2) = -x6(i,2)*scope+robot_po6(1);
+            compton.scatter(compton.cnt, 3) = x6(i,3)*scope+robot_po6(2);
+            compton.scatter(compton.cnt, 4) = -x6(i,4)*scope+robot_po6(3);
+            compton.scatter(compton.cnt, 5) = x6(i,5);
+            compton.scatter(compton.cnt, 6) = camera_direction5(1);
+            compton.scatter(compton.cnt, 7) = camera_direction5(2);
+            compton.scatter(compton.cnt, 8) = camera_direction5(3);
+            
+            compton.absorber(compton.cnt, 1) = x6(i+1,1);         
+            compton.absorber(compton.cnt, 2) = -x6(i+1,2)*scope+robot_po6(1);
+            compton.absorber(compton.cnt, 3) = x6(i+1,3)*scope+robot_po6(2);
+            compton.absorber(compton.cnt, 4) = -x6(i+1,4)*scope+robot_po6(3);
+            compton.absorber(compton.cnt, 5) = x6(i+1,5);
+            compton.cnt = compton.cnt + 1;
+        end
+    end
+end
+x6compton_cnt = compton.cnt -1;
+for i=x5compton_cnt+1:compton.cnt-1
+    index = Det.Num_scatter * compton.scatter(i,1) + compton.absorber(i,1) - (Det.Num_absorber - 1);
+    index2 = index + 64*64*5;
+    Index_compton(1,index2) = Index_compton(1,index2) + 1;
+    Index_compton(2,index2) = i;
+end
+for i=1:1:(size(x7,1)-1)  
+    if(x7(i,1)<64 && x7(i+1,1) > 63 && x7(i,5) < 0.66)   %select first layer coincidence
+        if((x7(i,5)+x7(i+1,5)) <= 0.66 && (x7(i,5)+x7(i+1,5)) >= 0.6555)  %compared deposited energy
+            compton.scatter(compton.cnt, 1) = x7(i,1);         
+            compton.scatter(compton.cnt, 2) = -x7(i,2)*scope+robot_po6(1);
+            compton.scatter(compton.cnt, 3) = x7(i,3)*scope+robot_po6(2);
+            compton.scatter(compton.cnt, 4) = -x7(i,4)*scope+robot_po6(3);
+            compton.scatter(compton.cnt, 5) = x7(i,5);
+            compton.scatter(compton.cnt, 6) = camera_direction5(1);
+            compton.scatter(compton.cnt, 7) = camera_direction5(2);
+            compton.scatter(compton.cnt, 8) = camera_direction5(3);
+            
+            compton.absorber(compton.cnt, 1) = x7(i+1,1);         
+            compton.absorber(compton.cnt, 2) = -x7(i+1,2)*scope+robot_po6(1);
+            compton.absorber(compton.cnt, 3) = x7(i+1,3)*scope+robot_po6(2);
+            compton.absorber(compton.cnt, 4) = -x7(i+1,4)*scope+robot_po6(3);
+            compton.absorber(compton.cnt, 5) = x7(i+1,5);
+            compton.cnt = compton.cnt + 1;
+        end
+    end
+end
+x7compton_cnt = compton.cnt -1;
+for i=x5compton_cnt+1:compton.cnt-1
+    index = Det.Num_scatter * compton.scatter(i,1) + compton.absorber(i,1) - (Det.Num_absorber - 1);
+    index2 = index + 64*64*6;
+    Index_compton(1,index2) = Index_compton(1,index2) + 1;
+    Index_compton(2,index2) = i;
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calculating cos(Theta)
 for i=1:1:compton.cnt-1 
     %angle=1-((0.511875*compton.scatter(i,5))/(0.66*compton.absorber(i,5)));  %cos
@@ -99,12 +261,15 @@ Recon_R=1;
 E_ang = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%3d-reconstruction
+%3d-reconstruction 
 td.CENTER = [0 0];
-td.RESO = 1;
-td.WIDTH = 20; 
-td.HEIGHT = 20;
-td.nGrid = round(td.WIDTH*td.HEIGHT*5/(td.RESO^2));
+td.zStart = -5;
+td.zRECON = 1;
+td.RESO = 0.5;
+td.WIDTH = 5; 
+td.HEIGHT = 5;
+td.DEPTH = 10;
+td.nGrid = round(td.WIDTH*td.HEIGHT*td.DEPTH/(td.RESO^2));
 td.data = zeros(1,td.nGrid);
 td.sen = zeros(1,td.nGrid);
 td.Index = zeros(1,td.nGrid);
@@ -119,8 +284,9 @@ for i=1:compton.cnt-1
         for j=1:td.nGrid
             J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
             xy=GetXYFromDataIndex(J,td);
-            z = fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)))+ 3;
-            pixel = [xy(1) xy(2) z];
+            z = td.zStart+fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+            %pixel = [xy(1) z xy(2)];
+            pixel = [xy(1) z xy(2)];
             %d = compton.scatter(i, 2:4)-compton.absorber(i,2:4);
             scatter = compton.scatter(i, 2:4);
             absorber = compton.absorber(i,2:4);
@@ -135,6 +301,21 @@ for i=1:compton.cnt-1
         end
     end
 end
+% max = -1000;
+% for j=1:td.nGrid
+%     if max < td.data(1,j)
+%         max = td.data(1,j);
+%     end
+% end
+% for j = 1:td.nGrid
+%     J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+%             xy=GetXYFromDataIndex(J,td);
+%     z = td.zStart+fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+%     pixel = [xy(1) xy(2) z];
+%     td.data(1,j)=td.data(1,j)/max;
+%     result.search = [result.search; pixel td.data(1,j)];
+% end
+csvwrite('constraint_result.csv',result.search);
 figure(100);
 ShowImage(td);
 shading interp;
@@ -143,81 +324,122 @@ shading interp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%LM
 %%%%%%%%%%%%%%%%Sensitivity%%%%%%%%%%%%%%%%%%%%%
-% S = zeros(1,td.nGrid);
-% 
-% %%%%%%%%%%%%%%%%%%
-% A_scat = 1*1; %cm
-% A_absor = 1*1; %cm
-% % %%%%%%%%%%%%%%%%%%
-% Z_det = 1; %cm
-% X_air = 1432.8 * 16 / ( 8*(8+1)*(11.319 - log(8)));
-% %X_CsI = 1432.8 * (132*0.5 + 125.9*0.5) / ( (55*0.5 + 53*0.5)*(55*0.5 + 53*0.5+1)(11.319 - log(55*0.5 + 53*0.5)))
-% X_CsI = 171.5; % g cm^-2  
-% norm_compton = [0 0 1];
-% sen_abso=0;
-% sen_scat=0;
-% for j = 1:td.nGrid
-%    xy=GetXYFromDataIndex(j,td);
-%    pixel_y_zero = [xy(1) -3  xy(2)];
-%    
-%    for N=0:Det.Num_scatter-1
-%        scatter = GetXYZFromScatterIndex(N,Det)*scope + robot_po;
-%        cos_01 = Cal_Angle((pixel_y_zero - scatter), norm_compton);
-%        R_01 = Cal_distance(pixel_y_zero,scatter);
-%        for K=0:Det.Num_absorber-1
-%           absorber = GetXYZFromAbsorberIndex(K,Det)*scope + robot_po; 
-%           cos_12 = Cal_Angle((scatter-absorber), norm_compton);
-%           cos_compton = Cal_Angle( (scatter-absorber) , (pixel_y_zero-scatter) );
-%           R_12 = Cal_distance(scatter,absorber);
-%           sen_abso = sen_abso + exp(-R_12/X_air)*(1-exp(-A_absor/X_CsI))*Klein_Nishina(cos_compton,E_o)*A_absor*cos_12/R_12^2;
-%        end
-%        sen_scat = sen_scat + exp(-R_01/X_air)*(1-exp( -A_scat/X_CsI))*A_scat*cos_01/(4*pi*R_01^2)*sen_abso;
-%    end
-%     
-%    S(1,j)=sen_scat;
-%    result.Pro = [result.Pro; j S(1,j)];
-%    sen_abso=0;
-%    sen_scat=0;
-%     
-% end
 sen_max = -1000;
 for j=1:td.nGrid
-    J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
-    xy=GetXYFromDataIndex(J,td);
-    z = fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2))) + 3;
-    pixel = [xy(1) xy(2) z];
        for N=0:Det.Num_scatter-1
-           scatter = GetXYZFromScatterIndex(N,Det)*scope + robot_po1;
+           scatter = GetXYZFromScatterIndex(N,Det)*scope + robot_po1;    
            for K=0:Det.Num_absorber-1
                absorber = GetXYZFromAbsorberIndex(K,Det)*scope + robot_po1; 
                td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction1);
            end
-           if sen_max < td.sen(1,j)
+           if sen_max < td.sen(1,j)   
+              sen_max = td.sen(1,j);
+           end
+       end
+end
+for j=1:td.nGrid
+       for N=0:Det.Num_scatter-1
+           scatter = GetXYZFromScatterIndex(N,Det)*scope + robot_po2; 
+           for K=0:Det.Num_absorber-1
+               absorber = GetXYZFromAbsorberIndex(K,Det)*scope + robot_po2; 
+               td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction2);
+           end
+           if sen_max < td.sen(1,j)    
               sen_max = td.sen(1,j);
            end
        end
 end
 for j = 1:td.nGrid
-   J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
-    xy=GetXYFromDataIndex(J,td);
-    z = fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2))) + 3;
-     pixel = [xy(1) xy(2) z];
        for N=0:Det.Num_scatter-1
-           %scatter = GetXYZFromScatterIndex(N,Det)*scope + robot_po2;
-           scat = GetXYZFromScatterIndex(N,Det);
-           scatter_turn = [-scat(3) scat(2) scat(1)];
-           scatter = scatter_turn*scope + robot_po2;
+           scatter = GetXYZFromScatterIndex(N,Det)*scope + robot_po3;
            for K=0:Det.Num_absorber-1
-               abso = GetXYZFromAbsorberIndex(K,Det)*scope + robot_po2;
-               abso_turn = [-abso(3) abso(2) abso(1)];
-               absorber = abso_turn*scope + robot_po2;
-               td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction2);
+               absorber = GetXYZFromAbsorberIndex(K,Det)*scope + robot_po3;
+               td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction3);
            end
            if sen_max < td.sen(1,j)
               sen_max = td.sen(1,j);
            end
-       end
-    
+       end  
+end
+for j = 1:td.nGrid
+   J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+    xy=GetXYFromDataIndex(J,td);
+     z = td.zStart+fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+     pixel = [xy(1) z xy(2)];
+       for N=0:Det.Num_scatter-1
+           scat = GetXYZFromScatterIndex(N,Det);
+           scatter_turn = [-scat(3) scat(2) scat(1)];
+           scatter = scatter_turn*scope + robot_po4;
+           for K=0:Det.Num_absorber-1
+               abso = GetXYZFromAbsorberIndex(K,Det);
+               abso_turn = [-abso(3) abso(2) abso(1)];
+               absorber = abso_turn*scope + robot_po4;
+               td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction4);
+           end
+           if sen_max < td.sen(1,j)
+              sen_max = td.sen(1,j);
+           end
+       end  
+end
+for j = 1:td.nGrid
+   J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+    xy=GetXYFromDataIndex(J,td);
+     z = td.zStart+fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+     pixel = [xy(1) z xy(2)];
+       for N=0:Det.Num_scatter-1
+           scat = GetXYZFromScatterIndex(N,Det);
+           scatter_turn = [-scat(3) scat(2) scat(1)];
+           scatter = scatter_turn*scope + robot_po5;
+           for K=0:Det.Num_absorber-1
+               abso = GetXYZFromAbsorberIndex(K,Det);
+               abso_turn = [-abso(3) abso(2) abso(1)];
+               absorber = abso_turn*scope + robot_po5;
+               td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction5);
+           end
+           if sen_max < td.sen(1,j)
+              sen_max = td.sen(1,j);
+           end
+       end  
+end
+for j = 1:td.nGrid
+   J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+    xy=GetXYFromDataIndex(J,td);
+     z = td.zStart+fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+     pixel = [xy(1) z xy(2)];
+       for N=0:Det.Num_scatter-1
+           scat = GetXYZFromScatterIndex(N,Det);
+           scatter_turn = [-scat(1) scat(2) -scat(3)];
+           scatter = scatter_turn*scope + robot_po6;
+           for K=0:Det.Num_absorber-1
+               abso = GetXYZFromAbsorberIndex(K,Det);
+               abso_turn = [-abso(1) abso(2) -abso(3)];
+               absorber = abso_turn*scope + robot_po6;
+               td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction6);
+           end
+           if sen_max < td.sen(1,j)
+              sen_max = td.sen(1,j);
+           end
+       end  
+end
+for j = 1:td.nGrid
+   J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+    xy=GetXYFromDataIndex(J,td);
+     z = td.zStart+fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+     pixel = [xy(1) z xy(2)];
+       for N=0:Det.Num_scatter-1
+           scat = GetXYZFromScatterIndex(N,Det);
+           scatter_turn = [-scat(1) scat(2) -scat(3)];
+           scatter = scatter_turn*scope + robot_po7;
+           for K=0:Det.Num_absorber-1
+               abso = GetXYZFromAbsorberIndex(K,Det);
+               abso_turn = [-abso(1) abso(2) -abso(3)];
+               absorber = abso_turn*scope + robot_po7;
+               td.sen(1,j)=td.sen(1,j)+System_mat_Sen(scatter,absorber,j,td,E_o,camera_direction7);
+           end
+           if sen_max < td.sen(1,j)
+              sen_max = td.sen(1,j);
+           end
+       end  
 end
 for j = 1:td.nGrid 
    td.sen(1,j)=td.sen(1,j)/sen_max; 
@@ -227,77 +449,18 @@ end
 % shading interp;
 
 
-%%%%%%%%%%%%%%%%%%%%%%%constant z%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% for j = 1:td.nGrid
-%     xy=GetXYFromDataIndex(j,td);
-%     pixel = [xy(1) xy(2) 5 ];
-%     % (0 0 0) : 1.00
-%     for k =0:Det.Num_scatter-1
-%         xyz=GetXYZFromScatterIndex(k,Det);
-%         scatter = [xyz(1) xyz(2) xyz(3)]*scope + robot_po;
-%         S(1,j) = S(1,j) + ((1-exp(-4.51*1))/Cal_distance(pixel, scatter)^3);
-%     end
-% end
-%%%%%%%%%%%%%%%%%%%%%%%constant y %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% for j = 1:td.nGrid
-%     xy=GetXYFromDataIndex(j,td);
-%     pixel = [xy(1) 0 xy(2) ];
-%     % (0 0 0) : 1.00
-%     S(1,j)=(1.5/Cal_distance(pixel,robot_po))^2*Cal_Angle(pixel-robot_po, camera_direction);
-%     result.Pro=[result.Pro; j xy(1) 0 xy(2) S(1,j)];
-% end
-
-%csvwrite('result_Pro.csv',result.Pro);
-% for j=1:td.nGrid
-%     for i=1:Det.nGrid
-%         S(1,j)=S(1,j)+System_mat_Sen(i,j,Det,td,E_o,robot_po,scope);
-%     end
-% end
-%csvwrite('result_Pro.csv',result.Pro);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%Iteration%%%%%%%%%%%%%%%%%%%%%%%
-compton_cnt=0;
-for i=1:Det.nGrid*2
-    if Index_compton(1,i) > 0
-        compton_cnt = compton_cnt + 1;
-    end
-end
-% max_data = -1000;
-% for j = 1:td.nGrid
-%     if max_data < td.data(1,j)
-%         max_data = td.data(1,j);
+% compton_cnt=0;
+% for i=1:Det.nGrid*3
+%     if Index_compton(1,i) > 0
+%         compton_cnt = compton_cnt + 1;
 %     end
 % end
-%thread1= max_data - 7*sqrt(max_data);
-% for it = 1:1:1
-%     %max = -100;
-%     for j = 1:td.nGrid 
-%         %if(td.data(1,j) > thread1)
-%         B=0;
-%         for i=1:Det.nGrid
-%             A = 0;
-%             if (Index_compton(1,i) > 0)
-%                 if(compton.angle(Index_compton(2,i),1) <= 1 && compton.angle(Index_compton(2,i),1) >= -1)
-%                     for k = 1:td.nGrid 
-%                         A = A + System_mat_2d(Index_compton(2,i),k,compton,td,E_o)*td.data(1,k);
-%                     end
-%                     B = B + Index_compton(1,i)*System_mat_2d(Index_compton(2,i),j,compton,td,E_o)/A;
-%                 end
-%             end
-%         end
-%         td.data(1,j) = td.data(1,j)*B*td.sen(1,j);
-%        %  else
-%        % td.data(1,j)=0;
-%         %end
-%     end 
-%     figure(it);
-%     ShowImage(td);
-%     shading interp;
-% end
-for it=1:20
-    compton.revise_factor = zeros(1,compton.cnt-1);
-    for i=1:Det.nGrid*2
+
+for it=1:100
+    compton.revise_factor = zeros(1,Det.nGrid*3);
+    for i=1:Det.nGrid*3
         if (Index_compton(1,i) > 0)
             if (compton.angle(Index_compton(2,i),1) <= 1 && compton.angle(Index_compton(2,i),1) >= -1)
                 for k=1:td.nGrid
@@ -307,37 +470,43 @@ for it=1:20
             end
         end
     end
-    
+    compton.revise_factor(~isfinite(compton.revise_factor))=0;
     A=zeros(1,td.nGrid);
     for j=1:1:td.nGrid   
-        for i=1:Det.nGrid*2
+        for i=1:Det.nGrid*3
            if (Index_compton(1,i) > 0)
               if (compton.angle(Index_compton(2,i),1) <= 1 && compton.angle(Index_compton(2,i),1) >= -1)
                   if compton.revise_factor(1,Index_compton(2,i)) ~= 0
-                    A(1,j)=A(1,j)+ (Index_compton(1,i)*System_mat_2d(Index_compton(2,i),j,compton,td,E_o)/compton.revise_factor(1,Index_compton(2,i)));
-                  end
+                     A(1,j)=A(1,j)+ (Index_compton(1,i)*System_mat_2d(Index_compton(2,i),j,compton,td,E_o)/compton.revise_factor(1,Index_compton(2,i)));
+
+                 end
               end
            end
         end
-         td.data(1,j)=td.data(1,j)*A(1,j)/td.sen(1,j);
+         td.data(1,j)=td.data(1,j)*A(1,j)*td.sen(1,j);
     end
-%     thread = max - 20*sqrt(max);
-%     disp(thread);
-%     disp(max);
-%     for j=1:td.nGrid
-%         if td.data(1,j) < thread
-%             td.data(1,j) = 0;
-%         end
-%     end
-    
-    figure(it);
-    ShowImage(td);
-    shading interp;
+    max_data = -1000;
+    for j = 1:td.nGrid
+        if max_data < td.data(1,j)
+            max_data = td.data(1,j);
+        end
+    end
+%%%%%%%%%%%%%filter%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    thread = max_data - 15*sqrt(max_data);
+    disp('THread');
+    disp(thread);
+    disp(max_data);
+    for j=1:td.nGrid
+        if td.data(1,j) < thread
+            td.data(1,j) = 0;
+        end
+    end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% figure(it);
+% ShowImage(td);
+% shading interp;
 end
-
-
-
-
+    
 max = -1000;
 for j=1:td.nGrid
     if max < td.data(1,j)
@@ -347,10 +516,12 @@ end
 for j = 1:td.nGrid
     td.data(1,j)=td.data(1,j)/max;
 end
+result.coordinates = [];
 for j=1:td.nGrid
+    figure(130);
     J = rem(j,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
     xy=GetXYFromDataIndex(J,td);
-    z = fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2))) + 3;
+    z = td.zStart+fix(j/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
     pixel = [xy(1) z xy(2)];
     plot3(pixel(1),pixel(2),pixel(3),'--ks',...
     'LineWidth',2,...
@@ -358,9 +529,9 @@ for j=1:td.nGrid
     'MarkerFaceColor',[td.data(1,j),0.1,1-td.data(1,j)]);
     grid on;
     hold on;
-    %result.coordinates = [result.coordinates; j pixel];
+    result.coordinates = [result.coordinates; pixel td.data(1,j)];
 end
-
+csvwrite('result_recon_ob7.csv', result.coordinates);
 function ShowImage(rm)
     xmin=rm.CENTER(1)-rm.WIDTH/2;
     xmax=rm.CENTER(1)+rm.WIDTH/2-rm.RESO;
@@ -369,8 +540,8 @@ function ShowImage(rm)
     
     [X,Y]=meshgrid(xmin:rm.RESO:xmax, ymin:rm.RESO:ymax);
     sizeX = size(X);
-    data=reshape(rm.data,sizeX(1),sizeX(2),5);
-    surf(X,Y,data(:,:,3));
+    data=reshape(rm.data,sizeX(1),sizeX(2),rm.DEPTH);
+    surf(X,Y,data(:,:,rm.zRECON));
     
 end
 function [system_mat]=System_mat_2d(indexforcompton,indexforpixel,compton,td,E_o)
@@ -378,15 +549,14 @@ function [system_mat]=System_mat_2d(indexforcompton,indexforpixel,compton,td,E_o
     P = 2;  
     J = rem(indexforpixel,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
     xy=GetXYFromDataIndex(J,td);
-    z = fix(indexforpixel/(td.WIDTH*td.HEIGHT/(td.RESO^2))) + 3;
-    pixel_y_zero = [xy(1) xy(2)  z];
+    %pixel = [xy(1) xy(2)  z];
     scatter = compton.scatter(indexforcompton, 2:4);
     absorber = compton.absorber(indexforcompton,2:4);
-    beta_frompixel = Cal_Angle(pixel_y_zero-scatter,scatter-absorber);
-    beta = acos(compton.angle(indexforcompton,1));
+    %beta_frompixel = Cal_Angle(pixel_y_zero-scatter,scatter-absorber);
+    %beta = acos(compton.angle(indexforcompton,1));
     norm_compton = compton.scatter(indexforcompton, 6:8);
     %center = [0 0 0];
-    cos_theta_m = Cal_Angle((pixel_y_zero - scatter), norm_compton);
+    %cos_theta_m = Cal_Angle((pixel_y_zero - scatter), norm_compton);
     cos_theta_g = Cal_Angle((scatter-absorber), norm_compton);
     %theta_g = Cal_Angle((Transform_cart(pixel)-center),norm_compton);
     
@@ -416,8 +586,8 @@ function [system_mat]=System_mat_Sen(scatter,absorber,indexforpixel,td,E_o,camer
     %%%%%%%%%%%%%%%%%%
     J = rem(indexforpixel,(td.WIDTH*td.HEIGHT/(td.RESO^2)));
     xy=GetXYFromDataIndex(J,td);
-    z = fix(indexforpixel/(td.WIDTH*td.HEIGHT/(td.RESO^2))) + 3;
-    pixel_y_zero = [xy(1) xy(2) z ];
+    z = td.zStart + fix(indexforpixel/(td.WIDTH*td.HEIGHT/(td.RESO^2)));
+    pixel_y_zero = [xy(1) z xy(2)];
     norm_compton = [camera_direction(1) camera_direction(2) camera_direction(3)];
     cos_theta_g = Cal_Angle((scatter-absorber), norm_compton);
     cos_theta_m = Cal_Angle((pixel_y_zero - scatter), norm_compton);
@@ -443,7 +613,7 @@ function [system_mat]=System_mat_Sen(scatter,absorber,indexforpixel,td,E_o,camer
     %E_prime = E_o*m_c_2/(E_o*(1-compton.angle(indexforcompton,1)) + m_c_2);
     %171.5
     E_2=1/((-beta_frompixel+1)/m_c_2 + 1/E_o); 
-    system_mat = Klein_Nishina(beta_frompixel,E_o)*10^4*(1 - exp(-1/(1.243*(E_o-E_2)*171.5)))...
+    system_mat = Klein_Nishina(beta_frompixel,E_o)*(1 - exp(-1/(1.243*(E_o-E_2)*171.5)))...
         /((Cal_distance(scatter,absorber))^2* cos_theta_g);
 %     if abs(beta_frompixel - beta) < P*var
 %         system_mat = Klein_Nishina(beta_frompixel, E_o)*abs(cos_theta_m)*(1/(sqrt(2*pi)*var))*exp( (-1/2)*( (acos(beta_frompixel) - beta)/var )^2  )...
@@ -481,7 +651,7 @@ function xyz = Transform_cart(pixel)
 end
 function Angle=Cal_Scatter_ang(pixel,scatter,absorber)
     [x, y, z] = sph2cart(toRadian(pixel(1)),toRadian(90-pixel(2)),1);
-    cart = [x, y, z];
+    cart = [x, y, z]; 
     %center = [0 0 0];
     X = cart-scatter;
     Y = scatter - absorber;
@@ -580,6 +750,7 @@ function xyz=GetXYZFromAbsorberIndex(ig,Det)
     
     xyz = [x*10 y*10 Det.Distance_scatter_absorber];
 end
+
 
 
 

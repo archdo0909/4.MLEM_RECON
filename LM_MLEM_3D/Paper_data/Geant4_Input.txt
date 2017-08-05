@@ -1,0 +1,41 @@
+radiation source (7,10,1.5)
+robot position1 (5,8,0.5)
+robot position2 (7,8,0.5)
+robot position3 (10,8,0.5)
+robot position4 (12,8,0.5)-> (-5,2,1)
+robot position5 (12,9,0.5)
+robot position6 (12,10,0.5)
+robot position7 (12,11,0.5)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%ERROR%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+in the geant4
+(0 0 0)
+1. (2,2, 1) -> (2,1,2)  
+particleGun->SetParticleMomentumDirection(G4ThreeVector(1*std::sin(angle2-bearing2)*cos(angle2_2),
+-1*std::sin(angle_height+angle2_2),-1*std::cos(angle2-bearing2)*cos(angle2_2)));
+run/beamOn 2000000  -> 827
+
+(-1, 0, 0)
+
+2. (0,2, 1) -> (0,1,2)  
+fSigmaAngle(10.*deg)
+G4ThreeVector(-1*std::sin(angle2_2),
+1*std::sin(angle2-bearing2)*cos(angle2_2),-1*std::cos(angle2-bearing2)*cos(angle2_2))
+run/beamOn 2000000 -> 1275
+3. (-3,2, 1)-> (-3,1,2)
+-> 438
+4. (-5,2, 1)-> (-5,1,2) -> (-2.1213, 1, 4.9497)
+angle rotation 45 degree
+particleGun->SetParticleMomentumDirection(G4ThreeVector(-1*std::sin(angle2-bearing2)*cos(angle2_2),
+-1*std::sin(angle_height-angle2_2),-1*std::cos(angle2-bearing2)*cos(angle2_2))); 
+->199
+5. (-5,1, 1)-> (-5,1,1) -> (1,1,5)
+angle rotation 90 degree
+-> 240
+6. (-5,0, 1)-> (-5,1,0) -> (0,1,5)
+angle rotation 90 degree
+-> 211
+7. (-5,-1, 1)-> (-5,1,-1) -> (-1,1,5)
+angle rotation 90 degree
+->228
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
